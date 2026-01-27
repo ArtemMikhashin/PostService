@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS posts (
-                                     id SERIAL PRIMARY KEY,
-                                     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     author VARCHAR(100) NOT NULL,
     title VARCHAR(200),
     content TEXT NOT NULL CHECK (LENGTH(content) <= 2000),
@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS posts (
     );
 
 CREATE TABLE IF NOT EXISTS comments (
-                                        id SERIAL PRIMARY KEY,
-                                        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     author VARCHAR(100) NOT NULL,
     content TEXT NOT NULL CHECK (LENGTH(content) <= 2000),
     post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,

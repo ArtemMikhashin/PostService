@@ -10,7 +10,17 @@ make db.up
 make migrate.up
 ```
 
+## Команды к бд
+```
+make db.exec
+```
+
 ## Отключить postgreSQL образ
 ```
 make db.down
+```
+
+# Запуск сервера
+```
+go run cmd/main.go
 ```

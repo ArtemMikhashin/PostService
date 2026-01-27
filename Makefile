@@ -7,7 +7,7 @@ db.down:
 	docker compose down
 
 db.exec:
-	docker exec -it posts_postgres psql -U $(POSTGRES_USER) -d $(POSTGRES_DB)
+	docker exec -it postservice-postgres-1 psql -U $(POSTGRES_USER) -d $(POSTGRES_DB)
 
 migrate.up:
 	docker run --rm \
