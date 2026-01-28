@@ -18,26 +18,31 @@ func main() {
 	_ = godotenv.Load()
 	log := logger.New()
 
+	var postPgStore *postgres.PostStorage
+	var postMemStore *inmemory.PostStorage
+	var commentPgStore *postgres.CommentStorage
+	var commentMemStore *inmemory.CommentStorage
+
 	inMemory := os.Getenv("IN_MEMORY") == "true"
-
-	var PostPostgresStorage *postgres.PostStorage
-	var PostInmemoryStorage *inmemory.PostStorage
-
 	if !inMemory {
 		db, err := app.ConnectDB()
 		if err != nil {
 			log.Error.Fatalf("DB connection failed: %v", err)
 		}
 		defer db.Close()
-		PostPostgresStorage = postgres.NewPostStorage(db)
+		postPgStore = postgres.NewPostStorage(db)
+		commentPgStore = postgres.NewCommentStorage(db)
 	} else {
-		PostInmemoryStorage = inmemory.NewPostStorage()
+		postMemStore = inmemory.NewPostStorage()
+		commentMemStore = inmemory.NewCommentStorage(postMemStore)
 	}
 
-	postService := service.NewPostService(inMemory, PostPostgresStorage, PostInmemoryStorage)
+	postService := service.NewPostService(inMemory, postPgStore, postMemStore)
+	commentService := service.NewCommentService(inMemory, commentPgStore, commentMemStore, postService)
 
 	resolver := &graphql.Resolver{
-		PostService: postService,
+		PostService:    postService,
+		CommentService: commentService,
 	}
 
 	srv := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver}))

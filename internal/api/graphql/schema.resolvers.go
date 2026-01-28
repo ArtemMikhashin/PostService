@@ -39,12 +39,25 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input domain.CreatePo
 
 // CreateComment is the resolver for the createComment field.
 func (r *mutationResolver) CreateComment(ctx context.Context, input domain.CreateCommentInput) (*domain.Comment, error) {
-	panic(fmt.Errorf("not implemented: CreateComment - createComment"))
+	comment, err := r.CommentService.CreateComment(input)
+	if err != nil {
+		return nil, &gqlerror.Error{Message: err.Error()}
+	}
+	return &comment, nil
 }
 
 // Comments is the resolver for the comments field.
 func (r *postResolver) Comments(ctx context.Context, obj *domain.Post, page *int, pageSize *int) ([]*domain.Comment, error) {
-	panic(fmt.Errorf("not implemented: Comments - comments"))
+	comments, err := r.CommentService.GetCommentsByPost(obj.ID, page, pageSize)
+	if err != nil {
+		return nil, &gqlerror.Error{Message: err.Error()}
+	}
+	result := make([]*domain.Comment, len(comments))
+	for i := range comments {
+		c := comments[i]
+		result[i] = &c
+	}
+	return result, nil
 }
 
 // Posts is the resolver for the posts field.
