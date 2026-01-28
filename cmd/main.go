@@ -2,6 +2,8 @@ package main
 
 import (
 	"PostService/internal/app"
+	"PostService/internal/domain"
+	"PostService/internal/storage/inmemory"
 	"PostService/internal/storage/postgres"
 	"PostService/pkg/logger"
 	"context"
@@ -11,6 +13,10 @@ import (
 	"os"
 	"time"
 )
+
+type PostGetter interface {
+	GetAllPosts(limit, offset int) ([]domain.Post, error)
+}
 
 func main() {
 	_ = godotenv.Load()
@@ -22,10 +28,25 @@ func main() {
 	}
 	defer db.Close()
 
-	postStorage := postgres.NewPostStorage(db)
+	var postGetter PostGetter
+
+	inMemory := os.Getenv("IN_MEMORY") == "true"
+	if inMemory {
+		log.Info.Println("in-memory storage")
+		postGetter = inmemory.NewPostStorage()
+	} else {
+		log.Info.Println("PostgreSQL storage")
+		postGetter = postgres.NewPostStorage(db)
+	}
+
+	if inMemory {
+		ps := inmemory.NewPostStorage()
+		ps.AddSampleData()
+		postGetter = ps
+	}
 
 	http.HandleFunc("/debug/posts", func(w http.ResponseWriter, r *http.Request) {
-		posts, err := postStorage.GetAllPosts(10, 0)
+		posts, err := postGetter.GetAllPosts(10, 0)
 		if err != nil {
 			log.Error.Printf("Failed to fetch posts: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -37,8 +58,6 @@ func main() {
 			log.Error.Printf("Failed to encode response: %v", err)
 		}
 	})
-
-	log.Info.Println("Connected to database")
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
