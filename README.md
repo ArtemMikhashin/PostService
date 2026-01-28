@@ -1,6 +1,12 @@
 # PostService
 
-## Запуск postgreSQL образ
+# Запуск сервера
+Если в .env IN_MEMORY=false, то сначала запустить postgres (ниже)
+```
+make app.up
+```
+
+## Запуск postgreSQL образа с миграциями
 ```
 make db.up
 ```
@@ -20,7 +26,3 @@ make db.exec
 make db.down
 ```
 
-# Запуск сервера
-```
-go run cmd/main.go
-```
