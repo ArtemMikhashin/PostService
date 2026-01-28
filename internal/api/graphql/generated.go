@@ -986,9 +986,9 @@ func (ec *executionContext) _Post_title(ctx context.Context, field graphql.Colle
 			return obj.Title, nil
 		},
 		nil,
-		ec.marshalOString2string,
+		ec.marshalNString2string,
 		true,
-		false,
+		true,
 	)
 }
 
@@ -2916,7 +2916,7 @@ func (ec *executionContext) unmarshalInputCreatePostInput(ctx context.Context, o
 			it.Author = data
 		case "title":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3192,6 +3192,9 @@ func (ec *executionContext) _Post(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "title":
 			out.Values[i] = ec._Post_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "content":
 			out.Values[i] = ec._Post_content(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4216,18 +4219,6 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	_ = sel
 	_ = ctx
 	res := graphql.MarshalInt(*v)
-	return res
-}
-
-func (ec *executionContext) unmarshalOString2string(ctx context.Context, v any) (string, error) {
-	res, err := graphql.UnmarshalString(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	_ = sel
-	_ = ctx
-	res := graphql.MarshalString(v)
 	return res
 }
 

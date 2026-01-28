@@ -9,6 +9,8 @@ import (
 	"PostService/internal/domain"
 	"context"
 	"fmt"
+
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Post is the resolver for the post field.
@@ -28,7 +30,11 @@ func (r *commentResolver) Replies(ctx context.Context, obj *domain.Comment) ([]*
 
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input domain.CreatePostInput) (*domain.Post, error) {
-	panic(fmt.Errorf("not implemented: CreatePost - createPost"))
+	post, err := r.PostService.CreatePost(input)
+	if err != nil {
+		return nil, &gqlerror.Error{Message: err.Error()}
+	}
+	return &post, nil
 }
 
 // CreateComment is the resolver for the createComment field.
@@ -43,7 +49,16 @@ func (r *postResolver) Comments(ctx context.Context, obj *domain.Post, page *int
 
 // Posts is the resolver for the posts field.
 func (r *queryResolver) Posts(ctx context.Context, page *int, pageSize *int) ([]*domain.Post, error) {
-	panic(fmt.Errorf("not implemented: Posts - posts"))
+	posts, err := r.PostService.GetAllPosts(page, pageSize)
+	if err != nil {
+		return nil, &gqlerror.Error{Message: err.Error()}
+	}
+	result := make([]*domain.Post, len(posts))
+	for i := range posts {
+		p := posts[i]
+		result[i] = &p
+	}
+	return result, nil
 }
 
 // Post is the resolver for the post field.

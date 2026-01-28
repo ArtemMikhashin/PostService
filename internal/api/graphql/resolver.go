@@ -1,9 +1,7 @@
 package graphql
 
-import "PostService/internal/domain"
+import "PostService/internal/service"
 
 type Resolver struct {
-	PostStore interface {
-		GetAllPosts(limit, offset int) ([]domain.Post, error)
-	}
+	PostService *service.PostService
 }

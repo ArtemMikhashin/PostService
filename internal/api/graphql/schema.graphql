@@ -4,7 +4,7 @@ type Post {
     id: ID!
     createdAt: Time!
     author: String!
-    title: String
+    title: String!
     content: String!
     commentsAllowed: Boolean!
     comments(page: Int, pageSize: Int): [Comment!]!
@@ -22,7 +22,7 @@ type Comment {
 
 input CreatePostInput {
     author: String!
-    title: String
+    title: String!
     content: String!
     commentsAllowed: Boolean!
 }

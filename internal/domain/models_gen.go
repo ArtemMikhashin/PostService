@@ -10,10 +10,10 @@ type CreateCommentInput struct {
 }
 
 type CreatePostInput struct {
-	Author          string  `json:"author"`
-	Title           *string `json:"title,omitempty"`
-	Content         string  `json:"content"`
-	CommentsAllowed bool    `json:"commentsAllowed"`
+	Author          string `json:"author"`
+	Title           string `json:"title"`
+	Content         string `json:"content"`
+	CommentsAllowed bool   `json:"commentsAllowed"`
 }
 
 type Mutation struct {

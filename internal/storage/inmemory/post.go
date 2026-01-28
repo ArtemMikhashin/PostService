@@ -42,32 +42,14 @@ func (s *PostStorage) GetAllPosts(limit, offset int) ([]domain.Post, error) {
 	return result, nil
 }
 
-func (s *PostStorage) AddSampleData() {
+func (s *PostStorage) CreatePost(p domain.Post) (domain.Post, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if len(s.posts) > 0 {
-		return
-	}
+	p.ID = s.nextID
+	p.CreatedAt = time.Now()
+	s.nextID++
 
-	now := time.Now()
-	s.posts = []domain.Post{
-		{
-			ID:              1,
-			CreatedAt:       now.Add(-1 * time.Hour),
-			Author:          "user1",
-			Title:           "tit1",
-			Content:         "c",
-			CommentsAllowed: true,
-		},
-		{
-			ID:              2,
-			CreatedAt:       now,
-			Author:          "user2",
-			Title:           "tit2",
-			Content:         "c2",
-			CommentsAllowed: false,
-		},
-	}
-	s.nextID = 3
+	s.posts = append(s.posts, p)
+	return p, nil
 }
