@@ -11,6 +11,7 @@ type CommentService struct {
 	storage interface {
 		CreateComment(c domain.Comment) (domain.Comment, error)
 		GetCommentsByPost(postID, limit, offset int) ([]domain.Comment, error)
+		GetReplies(parentID int) ([]domain.Comment, error)
 	}
 	postGetter interface {
 		GetAllPosts(page, pageSize *int) ([]domain.Post, error)
@@ -28,6 +29,7 @@ func NewCommentService(
 	var storage interface {
 		CreateComment(c domain.Comment) (domain.Comment, error)
 		GetCommentsByPost(postID, limit, offset int) ([]domain.Comment, error)
+		GetReplies(parentID int) ([]domain.Comment, error)
 	}
 
 	if inMemory {
@@ -53,7 +55,14 @@ func (s *CommentService) CreateComment(input domain.CreateCommentInput) (domain.
 		return domain.Comment{}, errors.New("invalid post ID")
 	}
 
-	// TODO: проверить CommentsAllowed у PostID
+	post, err := s.postGetter.(*PostService).GetPostByID(input.Post)
+	if err != nil {
+		return domain.Comment{}, errors.New("post not found")
+	}
+
+	if !post.CommentsAllowed {
+		return domain.Comment{}, errors.New("comments are not allowed for this post")
+	}
 
 	comment := domain.Comment{
 		Author:   input.Author,
@@ -74,4 +83,8 @@ func (s *CommentService) GetCommentsByPost(postID int, page, pageSize *int) ([]d
 		limit = *pageSize
 	}
 	return s.storage.GetCommentsByPost(postID, limit, offset)
+}
+
+func (s *CommentService) GetReplies(parentID int) ([]domain.Comment, error) {
+	return s.storage.GetReplies(parentID)
 }

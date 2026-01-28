@@ -10,6 +10,7 @@ import (
 type PostService struct {
 	storage interface {
 		GetAllPosts(limit, offset int) ([]domain.Post, error)
+		GetPostByID(id int) (*domain.Post, error)
 		CreatePost(p domain.Post) (domain.Post, error)
 	}
 }
@@ -17,6 +18,7 @@ type PostService struct {
 func NewPostService(inMemory bool, postgresStorage *postgres.PostStorage, inmemoryStorage *inmemory.PostStorage) *PostService {
 	var storage interface {
 		GetAllPosts(limit, offset int) ([]domain.Post, error)
+		GetPostByID(id int) (*domain.Post, error)
 		CreatePost(p domain.Post) (domain.Post, error)
 	}
 
@@ -58,4 +60,8 @@ func (s *PostService) GetAllPosts(page, pageSize *int) ([]domain.Post, error) {
 	}
 
 	return s.storage.GetAllPosts(limit, offset)
+}
+
+func (s *PostService) GetPostByID(id int) (*domain.Post, error) {
+	return s.storage.GetPostByID(id)
 }

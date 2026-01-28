@@ -25,7 +25,16 @@ func (r *commentResolver) ReplyTo(ctx context.Context, obj *domain.Comment) (*in
 
 // Replies is the resolver for the replies field.
 func (r *commentResolver) Replies(ctx context.Context, obj *domain.Comment) ([]*domain.Comment, error) {
-	panic(fmt.Errorf("not implemented: Replies - replies"))
+	replies, err := r.CommentService.GetReplies(obj.ID)
+	if err != nil {
+		return nil, &gqlerror.Error{Message: err.Error()}
+	}
+	result := make([]*domain.Comment, len(replies))
+	for i := range replies {
+		c := replies[i]
+		result[i] = &c
+	}
+	return result, nil
 }
 
 // CreatePost is the resolver for the createPost field.
@@ -76,7 +85,11 @@ func (r *queryResolver) Posts(ctx context.Context, page *int, pageSize *int) ([]
 
 // Post is the resolver for the post field.
 func (r *queryResolver) Post(ctx context.Context, id int) (*domain.Post, error) {
-	panic(fmt.Errorf("not implemented: Post - post"))
+	post, err := r.PostService.GetPostByID(id)
+	if err != nil {
+		return nil, &gqlerror.Error{Message: err.Error()}
+	}
+	return post, nil
 }
 
 // CommentAdded is the resolver for the commentAdded field.

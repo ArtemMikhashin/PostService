@@ -56,3 +56,16 @@ func (s *CommentStorage) GetCommentsByPost(postID, limit, offset int) ([]domain.
 	}
 	return result[offset:end], nil
 }
+
+func (s *CommentStorage) GetReplies(parentID int) ([]domain.Comment, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var result []domain.Comment
+	for _, c := range s.comments {
+		if c.ParentID != nil && *c.ParentID == parentID {
+			result = append(result, c)
+		}
+	}
+	return result, nil
+}

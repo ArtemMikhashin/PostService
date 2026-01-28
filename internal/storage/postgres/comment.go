@@ -40,3 +40,14 @@ func (s *CommentStorage) GetCommentsByPost(postID, limit, offset int) ([]domain.
 	err := s.db.Select(&comments, query, postID, limit, offset)
 	return comments, err
 }
+
+func (s *CommentStorage) GetReplies(parentID int) ([]domain.Comment, error) {
+	const query = `
+		SELECT id, created_at, author, content, post_id, parent_id
+		FROM comments
+		WHERE parent_id = $1
+		ORDER BY created_at ASC`
+	var comments []domain.Comment
+	err := s.db.Select(&comments, query, parentID)
+	return comments, err
+}

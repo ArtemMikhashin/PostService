@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"PostService/internal/domain"
+	"database/sql"
+	"errors"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -23,6 +25,18 @@ func (s *PostStorage) GetAllPosts(limit, offset int) ([]domain.Post, error) {
 	var posts []domain.Post
 	err := s.db.Select(&posts, query, limit, offset)
 	return posts, err
+}
+
+func (s *PostStorage) GetPostByID(id int) (*domain.Post, error) {
+	const query = `SELECT * FROM posts WHERE id = $1`
+	var p domain.Post
+	if err := s.db.Get(&p, query, id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("post not found")
+		}
+		return nil, err
+	}
+	return &p, nil
 }
 
 func (s *PostStorage) CreatePost(p domain.Post) (domain.Post, error) {

@@ -2,6 +2,7 @@ package inmemory
 
 import (
 	"PostService/internal/domain"
+	"errors"
 	"sync"
 	"time"
 )
@@ -40,6 +41,19 @@ func (s *PostStorage) GetAllPosts(limit, offset int) ([]domain.Post, error) {
 	}
 
 	return result, nil
+}
+
+func (s *PostStorage) GetPostByID(id int) (*domain.Post, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	for _, p := range s.posts {
+		if p.ID == id {
+			pCopy := p
+			return &pCopy, nil
+		}
+	}
+	return nil, errors.New("post not found")
 }
 
 func (s *PostStorage) CreatePost(p domain.Post) (domain.Post, error) {
