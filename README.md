@@ -1,10 +1,13 @@
 # PostService
 
 # Запуск сервера
+
 Если в .env IN_MEMORY=false, то сначала запустить postgres (ниже)
 ```
 make app.up
 ```
+
+# PostgreSQL
 
 ## Запуск postgreSQL образа с миграциями
 ```

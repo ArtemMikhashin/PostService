@@ -1,0 +1,23 @@
+schema:
+  - internal/api/graphql/schema.graphql
+
+exec:
+  filename: internal/api/graphql/generated.go
+  package: graphql
+
+model:
+  filename: internal/domain/models_gen.go
+  package: domain
+
+resolver:
+  layout: follow-schema
+  dir: internal/api/graphql
+  package: graphql
+
+autobind:
+  - "PostService/internal/domain"
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.IntID
