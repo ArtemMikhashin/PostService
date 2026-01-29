@@ -52,6 +52,9 @@ func (r *mutationResolver) CreateComment(ctx context.Context, input domain.Creat
 	if err != nil {
 		return nil, &gqlerror.Error{Message: err.Error()}
 	}
+
+	r.CommentSubscriptions.Notify(comment.PostID, comment)
+
 	return &comment, nil
 }
 
@@ -92,9 +95,19 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*domain.Post, error) 
 	return post, nil
 }
 
-// CommentAdded is the resolver for the commentAdded field.
 func (r *subscriptionResolver) CommentAdded(ctx context.Context, postID int) (<-chan *domain.Comment, error) {
-	panic(fmt.Errorf("not implemented: CommentAdded - commentAdded"))
+	id, ch, err := r.CommentSubscriptions.CreateSubscription(postID)
+	if err != nil {
+		return nil, &gqlerror.Error{Message: err.Error()}
+	}
+
+	// пользователь отключился - удаляем подписку
+	go func() {
+		<-ctx.Done()
+		_ = r.CommentSubscriptions.DeleteSubscription(postID, id)
+	}()
+
+	return ch, nil
 }
 
 // Comment returns CommentResolver implementation.

@@ -41,8 +41,9 @@ func main() {
 	commentService := service.NewCommentService(inMemory, commentPgStore, commentMemStore, postService)
 
 	resolver := &graphql.Resolver{
-		PostService:    postService,
-		CommentService: commentService,
+		PostService:          postService,
+		CommentService:       commentService,
+		CommentSubscriptions: graphql.NewCommentSubscriptions(),
 	}
 
 	srv := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver}))
