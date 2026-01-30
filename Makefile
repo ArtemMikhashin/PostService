@@ -3,6 +3,9 @@ include .env
 app.up:
 	go run cmd/main.go
 
+test:
+	go test ./... -v
+
 db.up:
 	docker compose up -d postgres
 	docker run --rm \

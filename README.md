@@ -1,31 +1,44 @@
 # PostService
 
-# Запуск сервера
+Сервис по работе с постами и комментариями к ним
 
-Если в .env IN_MEMORY=false, то сначала запустить postgres (ниже)
+# Запуск сервиса
+
+! Создать .env в корне по примеру .env.example
+
+## Docker
+Запуск
 ```
-make app.up
+docker-compose up --build
+```
+Отключение
+```
+docker-compose down
 ```
 
-# PostgreSQL
+## Локально
 
-## Запуск postgreSQL образа с миграциями
+1) Запуск postgreSQL образа с миграциями
 ```
 make db.up
 ```
 
-## Запуск postgreSQL образ
+2) Запуск приложения
 ```
-make migrate.up
-```
-
-## Команды к бд
-```
-make db.exec
+make app.up
 ```
 
-## Отключить postgreSQL образ
+(Завершение) Отключить postgreSQL образ
 ```
 make db.down
 ```
 
+(Опционально) Запуск миграций к БД
+```
+make migrate.up
+```
+
+(Опционально) Команды к бд
+```
+make db.exec
+```
