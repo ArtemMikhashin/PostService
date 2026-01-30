@@ -56,7 +56,7 @@ func main() {
 		port = "8080"
 	}
 
-	log.Info.Printf("http://localhost:%s", port)
+	log.Info.Printf("http://localhost: %s; db_mod in-memory: %t", port, inMemory)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Error.Fatalf("Server failed: %v", err)
 	}

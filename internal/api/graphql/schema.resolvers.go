@@ -8,19 +8,17 @@ package graphql
 import (
 	"PostService/internal/domain"
 	"context"
-	"fmt"
-
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Post is the resolver for the post field.
 func (r *commentResolver) Post(ctx context.Context, obj *domain.Comment) (int, error) {
-	panic(fmt.Errorf("not implemented: Post - post"))
+	return obj.PostID, nil
 }
 
 // ReplyTo is the resolver for the replyTo field.
 func (r *commentResolver) ReplyTo(ctx context.Context, obj *domain.Comment) (*int, error) {
-	panic(fmt.Errorf("not implemented: ReplyTo - replyTo"))
+	return obj.ParentID, nil
 }
 
 // Replies is the resolver for the replies field.

@@ -35,7 +35,9 @@ func (s *PostService) CreatePost(input domain.CreatePostInput) (domain.Post, err
 	if input.Author == "" {
 		return domain.Post{}, errors.New("author is required")
 	}
-
+	if len(input.Title) > 200 {
+		return domain.Post{}, errors.New("title must be at most 200 characters")
+	}
 	if len(input.Content) > 2000 {
 		return domain.Post{}, errors.New("content must be at most 2000 characters")
 	}
