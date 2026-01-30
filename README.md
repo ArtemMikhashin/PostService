@@ -50,4 +50,66 @@ make db.exec
 make test
 ```
 
+# Примеры запросов
 
+Создание поста
+```
+mutation {
+  createPost(input: {
+    author: "Test author"
+    title: "Test title"
+    content: "Test content"
+    commentsAllowed: true
+  }) {
+    id
+    title
+  }
+}
+```
+___
+Получение поста с комментариями по id поста
+```
+query {
+  post(id: 1) {
+    id
+    title
+    comments(page: 1, pageSize: 3) {
+      id
+      content
+      author
+      replies {
+        id
+        content
+        author
+      }
+    }
+  }
+}
+```
+___
+Создание комментария
+```
+mutation {
+  createComment(input: {
+    author: "Test author"
+    content: "Test content
+    post: 1
+    replyTo: 2
+  }) {
+    id
+    content
+  }
+}
+```
+___
+Подписка на комментарии к посту
+```
+subscription {
+  commentAdded(postId: 1) {
+    id
+    author
+    content
+    createdAt
+  }
+}
+```
