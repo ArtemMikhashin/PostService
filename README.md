@@ -33,12 +33,21 @@ make app.up
 make db.down
 ```
 
-(Опционально) Запуск миграций к БД
+(Опционально) Запуск миграций к PostgreSQL
 ```
 make migrate.up
 ```
 
-(Опционально) Команды к бд
+(Опционально) Команды к PostgreSQL
 ```
 make db.exec
 ```
+
+## Utit тесты
+
+Запуск unit тестов
+```
+make test
+```
+
+
