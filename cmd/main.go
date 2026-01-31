@@ -3,6 +3,7 @@ package main
 import (
 	"PostService/internal/api/graphql"
 	"PostService/internal/app"
+	"PostService/internal/dataloader"
 	"PostService/internal/service"
 	"PostService/internal/storage/inmemory"
 	"PostService/internal/storage/postgres"
@@ -48,8 +49,10 @@ func main() {
 
 	srv := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver}))
 
+	handlerWithLoader := dataloader.CommentLoaderMiddleware(commentService)(srv)
+
 	http.Handle("/", playground.Handler("GraphQL Playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/query", handlerWithLoader)
 
 	port := os.Getenv("PORT")
 	if port == "" {
