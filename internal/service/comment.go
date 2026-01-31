@@ -1,10 +1,12 @@
 package service
 
 import (
+	"PostService/internal/consts"
 	"PostService/internal/domain"
 	"PostService/internal/storage/inmemory"
 	"PostService/internal/storage/postgres"
 	"errors"
+	"fmt"
 )
 
 type CommentService struct {
@@ -48,8 +50,8 @@ func (s *CommentService) CreateComment(input domain.CreateCommentInput) (domain.
 	if input.Author == "" {
 		return domain.Comment{}, errors.New("author is required")
 	}
-	if len(input.Content) > 2000 {
-		return domain.Comment{}, errors.New("content must be at most 2000 characters")
+	if len(input.Content) > consts.MaxCommentLength {
+		return domain.Comment{}, fmt.Errorf("comment length exceeds maximum of %d characters", consts.MaxCommentLength)
 	}
 	if input.Post <= 0 {
 		return domain.Comment{}, errors.New("invalid post ID")
@@ -75,12 +77,16 @@ func (s *CommentService) CreateComment(input domain.CreateCommentInput) (domain.
 }
 
 func (s *CommentService) GetCommentsByPost(postID int, page, pageSize *int) ([]domain.Comment, error) {
-	limit, offset := 10, 0
+	limit, offset := consts.DefaultPageSizeComments, 0
 	if page != nil && *page > 0 {
 		offset = (*page - 1) * limit
 	}
 	if pageSize != nil && *pageSize > 0 {
-		limit = *pageSize
+		if *pageSize > consts.MaxPageSizeComments {
+			limit = consts.MaxPageSizeComments
+		} else {
+			limit = *pageSize
+		}
 	}
 	return s.storage.GetCommentsByPost(postID, limit, offset)
 }

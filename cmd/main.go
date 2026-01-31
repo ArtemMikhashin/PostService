@@ -3,6 +3,7 @@ package main
 import (
 	"PostService/internal/api/graphql"
 	"PostService/internal/app"
+	"PostService/internal/consts"
 	"PostService/internal/dataloader"
 	"PostService/internal/service"
 	"PostService/internal/storage/inmemory"
@@ -24,7 +25,7 @@ func main() {
 	var commentPgStore *postgres.CommentStorage
 	var commentMemStore *inmemory.CommentStorage
 
-	inMemory := os.Getenv("IN_MEMORY") == "true"
+	inMemory := os.Getenv(consts.EnvInMemory) == "true"
 	if !inMemory {
 		db, err := app.ConnectDB()
 		if err != nil {
@@ -54,7 +55,7 @@ func main() {
 	http.Handle("/", playground.Handler("GraphQL Playground", "/query"))
 	http.Handle("/query", handlerWithLoader)
 
-	port := os.Getenv("PORT")
+	port := os.Getenv(consts.EnvPort)
 	if port == "" {
 		port = "8080"
 	}

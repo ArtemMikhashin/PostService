@@ -1,6 +1,7 @@
 package service
 
 import (
+	"PostService/internal/consts"
 	"PostService/internal/domain"
 	"PostService/internal/storage/inmemory"
 	"testing"
@@ -45,7 +46,7 @@ func TestPostService_CreatePost(t *testing.T) {
 		input := domain.CreatePostInput{
 			Author:  "TestAuthor",
 			Title:   "TestTitle",
-			Content: string(make([]byte, 2001)),
+			Content: string(make([]byte, consts.MaxPostContentLength)),
 		}
 		_, err := service.CreatePost(input)
 		if err == nil {

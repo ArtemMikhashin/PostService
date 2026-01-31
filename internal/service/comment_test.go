@@ -1,6 +1,7 @@
 package service
 
 import (
+	"PostService/internal/consts"
 	"PostService/internal/domain"
 	"PostService/internal/storage/inmemory"
 	"testing"
@@ -73,12 +74,12 @@ func TestCommentService_CreateComment(t *testing.T) {
 	t.Run("content too long", func(t *testing.T) {
 		input := domain.CreateCommentInput{
 			Author:  "Spammer",
-			Content: string(make([]byte, 2001)),
+			Content: string(make([]byte, consts.MaxCommentLength+1)),
 			Post:    1,
 		}
 		_, err := commentService.CreateComment(input)
 		if err == nil {
-			t.Error("expected error length content > 2000")
+			t.Errorf("expected error length content > %d", consts.MaxCommentLength)
 		}
 	})
 }

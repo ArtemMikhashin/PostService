@@ -1,10 +1,12 @@
 package service
 
 import (
+	"PostService/internal/consts"
 	"PostService/internal/domain"
 	"PostService/internal/storage/inmemory"
 	"PostService/internal/storage/postgres"
 	"errors"
+	"fmt"
 )
 
 type PostService struct {
@@ -35,11 +37,11 @@ func (s *PostService) CreatePost(input domain.CreatePostInput) (domain.Post, err
 	if input.Author == "" {
 		return domain.Post{}, errors.New("author is required")
 	}
-	if len(input.Title) > 200 {
-		return domain.Post{}, errors.New("title must be at most 200 characters")
+	if len(input.Title) > consts.MaxPostTitleLength {
+		return domain.Post{}, fmt.Errorf("title must be at most %d characters", consts.MaxPostTitleLength)
 	}
-	if len(input.Content) > 2000 {
-		return domain.Post{}, errors.New("content must be at most 2000 characters")
+	if len(input.Content) > consts.MaxPostContentLength {
+		return domain.Post{}, fmt.Errorf("content must be at most %d characters", consts.MaxPostContentLength)
 	}
 
 	post := domain.Post{
@@ -53,12 +55,17 @@ func (s *PostService) CreatePost(input domain.CreatePostInput) (domain.Post, err
 }
 
 func (s *PostService) GetAllPosts(page, pageSize *int) ([]domain.Post, error) {
-	limit, offset := 10, 0 //дефолтные
+	limit, offset := consts.DefaultPageSizePosts, 0
+
 	if page != nil && *page > 0 {
 		offset = (*page - 1) * limit
 	}
 	if pageSize != nil && *pageSize > 0 {
-		limit = *pageSize
+		if *pageSize > consts.MaxPageSizePosts {
+			limit = consts.MaxPageSizePosts
+		} else {
+			limit = *pageSize
+		}
 	}
 
 	return s.storage.GetAllPosts(limit, offset)
