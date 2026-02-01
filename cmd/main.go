@@ -48,6 +48,7 @@ func main() {
 		CommentSubscriptions: graphql.NewCommentSubscriptions(),
 	}
 
+	// TODO: переписать на актуальный способ
 	srv := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver}))
 
 	handlerWithLoader := dataloader.CommentLoaderMiddleware(commentService)(srv)
@@ -60,7 +61,7 @@ func main() {
 		port = "8080"
 	}
 
-	log.Info.Printf("http://localhost: %s; db_mod in-memory: %t", port, inMemory)
+	log.Info.Printf("http://localhost:%s; db_mod in-memory: %t", port, inMemory)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Error.Fatalf("Server failed: %v", err)
 	}

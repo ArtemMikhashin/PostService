@@ -48,6 +48,7 @@ func (s *PostService) CreatePost(input domain.CreatePostInput) (domain.Post, err
 func (s *PostService) GetAllPosts(page, pageSize *int) ([]domain.Post, error) {
 	limit, offset := consts.DefaultPageSizePosts, 0
 
+	// TODO: переписать на курсорную пагинацию
 	if page != nil && *page > 0 {
 		offset = (*page - 1) * limit
 	}

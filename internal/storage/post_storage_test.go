@@ -50,7 +50,6 @@ func testPostStorage(t *testing.T, store storage.PostStorage) {
 	})
 
 	t.Run("pagination", func(t *testing.T) {
-		// Создаём 5 постов
 		for i := 0; i < 5; i++ {
 			_, err := store.CreatePost(domain.Post{
 				Author:  "Author",
@@ -78,7 +77,7 @@ func TestInMemoryPostStorage(t *testing.T) {
 }
 
 func TestPostgresPostStorage(t *testing.T) {
-	// Пропускаем тест, если нет подключения к БД (удобно для CI/локального запуска)
+	// Пропускаем тест, если нет подключения к БД
 	if os.Getenv("TEST_PG") == "" {
 		t.Skip("set TEST_PG=1 to run PostgreSQL tests")
 	}
@@ -108,7 +107,6 @@ func TestPostgresPostStorage(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Очищаем таблицы перед тестом
 	db.MustExec("TRUNCATE TABLE posts RESTART IDENTITY CASCADE")
 
 	store := postgres.NewPostStorage(db)

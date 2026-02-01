@@ -10,6 +10,7 @@ import (
 
 type commentLoaderKey struct{}
 
+// группировка запросов GetReplies по parentID, один SQL-запрос вместо N.
 func CommentBatcher(commentService *service.CommentService) dataloader.BatchFunc[int, []*domain.Comment] {
 	return func(ctx context.Context, parentIDs []int) []*dataloader.Result[[]*domain.Comment] {
 		results := make([]*dataloader.Result[[]*domain.Comment], len(parentIDs))

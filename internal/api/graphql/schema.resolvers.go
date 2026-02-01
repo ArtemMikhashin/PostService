@@ -12,17 +12,14 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-// Post is the resolver for the post field.
 func (r *commentResolver) Post(ctx context.Context, obj *domain.Comment) (int, error) {
 	return obj.PostID, nil
 }
 
-// ReplyTo is the resolver for the replyTo field.
 func (r *commentResolver) ReplyTo(ctx context.Context, obj *domain.Comment) (*int, error) {
 	return obj.ParentID, nil
 }
 
-// Replies is the resolver for the replies field.
 func (r *commentResolver) Replies(ctx context.Context, obj *domain.Comment) ([]*domain.Comment, error) {
 	thunk := dataloader.LoaderFromContext(ctx).Load(ctx, obj.ID)
 	result, err := thunk()
@@ -32,7 +29,6 @@ func (r *commentResolver) Replies(ctx context.Context, obj *domain.Comment) ([]*
 	return result, nil
 }
 
-// CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input domain.CreatePostInput) (*domain.Post, error) {
 	post, err := r.PostService.CreatePost(input)
 	if err != nil {
@@ -41,7 +37,6 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input domain.CreatePo
 	return &post, nil
 }
 
-// CreateComment is the resolver for the createComment field.
 func (r *mutationResolver) CreateComment(ctx context.Context, input domain.CreateCommentInput) (*domain.Comment, error) {
 	comment, err := r.CommentService.CreateComment(input)
 	if err != nil {
@@ -53,7 +48,6 @@ func (r *mutationResolver) CreateComment(ctx context.Context, input domain.Creat
 	return &comment, nil
 }
 
-// Comments is the resolver for the comments field.
 func (r *postResolver) Comments(ctx context.Context, obj *domain.Post, page *int, pageSize *int) ([]*domain.Comment, error) {
 	comments, err := r.CommentService.GetCommentsByPost(obj.ID, page, pageSize)
 	if err != nil {
@@ -67,7 +61,6 @@ func (r *postResolver) Comments(ctx context.Context, obj *domain.Post, page *int
 	return result, nil
 }
 
-// Posts is the resolver for the posts field.
 func (r *queryResolver) Posts(ctx context.Context, page *int, pageSize *int) ([]*domain.Post, error) {
 	posts, err := r.PostService.GetAllPosts(page, pageSize)
 	if err != nil {
@@ -81,7 +74,6 @@ func (r *queryResolver) Posts(ctx context.Context, page *int, pageSize *int) ([]
 	return result, nil
 }
 
-// Post is the resolver for the post field.
 func (r *queryResolver) Post(ctx context.Context, id int) (*domain.Post, error) {
 	post, err := r.PostService.GetPostByID(id)
 	if err != nil {
@@ -105,19 +97,14 @@ func (r *subscriptionResolver) CommentAdded(ctx context.Context, postID int) (<-
 	return ch, nil
 }
 
-// Comment returns CommentResolver implementation.
 func (r *Resolver) Comment() CommentResolver { return &commentResolver{r} }
 
-// Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
-// Post returns PostResolver implementation.
 func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 
-// Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-// Subscription returns SubscriptionResolver implementation.
 func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
 
 type commentResolver struct{ *Resolver }

@@ -15,7 +15,6 @@ import (
 )
 
 func testCommentStorage(t *testing.T, commentStore storage.CommentStorage, postStore storage.PostStorage) {
-	// Создаём пост
 	post, err := postStore.CreatePost(domain.Post{
 		Author:          "Author",
 		Title:           "Title",

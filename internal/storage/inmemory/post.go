@@ -36,6 +36,7 @@ func (s *PostStorage) GetAllPosts(limit, offset int) ([]domain.Post, error) {
 	result := make([]domain.Post, end-offset)
 	copy(result, s.posts[offset:end])
 
+	// переворачиваем список постов, чтобы сверху были новые
 	for i, j := 0, len(result)-1; i < j; i, j = i+1, j-1 {
 		result[i], result[j] = result[j], result[i]
 	}

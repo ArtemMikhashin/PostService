@@ -64,6 +64,7 @@ func (s *CommentService) CreateComment(input domain.CreateCommentInput) (domain.
 
 func (s *CommentService) GetCommentsByPost(postID int, page, pageSize *int) ([]domain.Comment, error) {
 	limit, offset := consts.DefaultPageSizeComments, 0
+	// TODO: переписать на курсорную пагинацию
 	if page != nil && *page > 0 {
 		offset = (*page - 1) * limit
 	}

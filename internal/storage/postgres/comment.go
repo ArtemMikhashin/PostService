@@ -27,7 +27,6 @@ func (s *CommentStorage) CreateComment(c domain.Comment) (domain.Comment, error)
 	return c, err
 }
 
-// where parentID null
 func (s *CommentStorage) GetCommentsByPost(postID, limit, offset int) ([]domain.Comment, error) {
 	const query = `
 		SELECT id, created_at, author, content, post_id, parent_id
