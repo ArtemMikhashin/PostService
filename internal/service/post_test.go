@@ -46,7 +46,7 @@ func TestPostService_CreatePost(t *testing.T) {
 		input := domain.CreatePostInput{
 			Author:  "TestAuthor",
 			Title:   "TestTitle",
-			Content: string(make([]byte, consts.MaxPostContentLength)),
+			Content: string(make([]byte, consts.MaxPostContentLength+1)),
 		}
 		_, err := service.CreatePost(input)
 		if err == nil {

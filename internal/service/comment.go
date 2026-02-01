@@ -3,6 +3,7 @@ package service
 import (
 	"PostService/internal/consts"
 	"PostService/internal/domain"
+	"PostService/internal/storage"
 	"PostService/internal/storage/inmemory"
 	"PostService/internal/storage/postgres"
 	"errors"
@@ -10,38 +11,24 @@ import (
 )
 
 type CommentService struct {
-	storage interface {
-		CreateComment(c domain.Comment) (domain.Comment, error)
-		GetCommentsByPost(postID, limit, offset int) ([]domain.Comment, error)
-		GetReplies(parentID int) ([]domain.Comment, error)
-	}
-	postGetter interface {
-		GetAllPosts(page, pageSize *int) ([]domain.Post, error)
-	}
+	storage    storage.CommentStorage
+	postGetter *PostService
 }
 
 func NewCommentService(
 	inMemory bool,
 	postgresComment *postgres.CommentStorage,
 	inmemoryComment *inmemory.CommentStorage,
-	postGetter interface {
-		GetAllPosts(page, pageSize *int) ([]domain.Post, error)
-	},
+	postGetter *PostService,
 ) *CommentService {
-	var storage interface {
-		CreateComment(c domain.Comment) (domain.Comment, error)
-		GetCommentsByPost(postID, limit, offset int) ([]domain.Comment, error)
-		GetReplies(parentID int) ([]domain.Comment, error)
-	}
-
+	var s storage.CommentStorage
 	if inMemory {
-		storage = inmemoryComment
+		s = inmemoryComment
 	} else {
-		storage = postgresComment
+		s = postgresComment
 	}
-
 	return &CommentService{
-		storage:    storage,
+		storage:    s,
 		postGetter: postGetter,
 	}
 }
@@ -56,8 +43,7 @@ func (s *CommentService) CreateComment(input domain.CreateCommentInput) (domain.
 	if input.Post <= 0 {
 		return domain.Comment{}, errors.New("invalid post ID")
 	}
-
-	post, err := s.postGetter.(*PostService).GetPostByID(input.Post)
+	post, err := s.postGetter.GetPostByID(input.Post)
 	if err != nil {
 		return domain.Comment{}, errors.New("post not found")
 	}

@@ -3,6 +3,7 @@ package service
 import (
 	"PostService/internal/consts"
 	"PostService/internal/domain"
+	"PostService/internal/storage"
 	"PostService/internal/storage/inmemory"
 	"PostService/internal/storage/postgres"
 	"errors"
@@ -10,27 +11,17 @@ import (
 )
 
 type PostService struct {
-	storage interface {
-		GetAllPosts(limit, offset int) ([]domain.Post, error)
-		GetPostByID(id int) (*domain.Post, error)
-		CreatePost(p domain.Post) (domain.Post, error)
-	}
+	storage storage.PostStorage
 }
 
 func NewPostService(inMemory bool, postgresStorage *postgres.PostStorage, inmemoryStorage *inmemory.PostStorage) *PostService {
-	var storage interface {
-		GetAllPosts(limit, offset int) ([]domain.Post, error)
-		GetPostByID(id int) (*domain.Post, error)
-		CreatePost(p domain.Post) (domain.Post, error)
-	}
-
+	var store storage.PostStorage
 	if inMemory {
-		storage = inmemoryStorage
+		store = inmemoryStorage
 	} else {
-		storage = postgresStorage
+		store = postgresStorage
 	}
-
-	return &PostService{storage: storage}
+	return &PostService{storage: store}
 }
 
 func (s *PostService) CreatePost(input domain.CreatePostInput) (domain.Post, error) {

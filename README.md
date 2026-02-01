@@ -45,9 +45,14 @@ make db.exec
 
 ## Utit тесты
 
-Запуск unit тестов
+Запуск unit тестов (без PostgreSQL)
 ```
 make test
+```
+
+Запуск unit тестов c PostgreSQL
+```
+make test-pg
 ```
 
 # Примеры запросов

@@ -6,6 +6,9 @@ app.up:
 test:
 	go test ./... -v
 
+test-pg:
+	env $$(grep -v '^#' .env | xargs) TEST_PG=1 go test ./internal/storage/... -v
+
 db.up:
 	docker compose up -d postgres
 	docker run --rm \
